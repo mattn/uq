@@ -1,4 +1,4 @@
 # uq
 
-The uniq but not sorted. Yes, I know this eat huge memory but I want.
+The uniq command but not sorted. Yes, I know this eat huge memory but I want.
 
