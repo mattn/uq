@@ -3,19 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 )
 
-func main() {
-	if !isStdin() {
-		fmt.Fprintln(os.Stderr, "stdin not detected")
-		os.Exit(1)
-	}
-
+func run(r io.Reader, w io.Writer) int {
 	lines := make(map[string]struct{})
 
-	scanner := bufio.NewScanner(os.Stdin)
-	out := bufio.NewWriter(os.Stdout)
+	scanner := bufio.NewScanner(r)
+	out := bufio.NewWriter(w)
 	var text string
 	var ok bool
 	for scanner.Scan() {
@@ -27,9 +23,10 @@ func main() {
 	}
 	if scanner.Err() != nil {
 		fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], scanner.Err())
-		os.Exit(1)
+		return 1
 	}
 	out.Flush()
+	return 0
 }
 
 func isStdin() bool {
@@ -38,4 +35,12 @@ func isStdin() bool {
 		return false
 	}
 	return (stat.Mode() & os.ModeCharDevice) == 0
+}
+
+func main() {
+	if !isStdin() {
+		fmt.Fprintln(os.Stderr, "stdin not detected")
+		os.Exit(1)
+	}
+	os.Exit(run(os.Stdin, os.Stdout))
 }
