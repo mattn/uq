@@ -13,16 +13,14 @@ func run(r io.Reader, w io.Writer) int {
 
 	scanner := bufio.NewScanner(r)
 	out := bufio.NewWriter(w)
-	var text string
 	var ok bool
 	for scanner.Scan() {
-		text = scanner.Text()
 		h := fnv.New32a()
-		h.Write([]byte(text))
+		h.Write(scanner.Bytes())
 		key := h.Sum32()
 		if _, ok = lines[key]; !ok {
 			lines[key] = struct{}{}
-			out.WriteString(text + "\n")
+			out.WriteString(scanner.Text() + "\n")
 		}
 	}
 	if scanner.Err() != nil {
