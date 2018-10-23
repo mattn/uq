@@ -3,12 +3,13 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"hash/fnv"
 	"io"
 	"os"
 )
 
 func run(r io.Reader, w io.Writer) int {
-	lines := make(map[string]struct{})
+	lines := make(map[uint32]struct{})
 
 	scanner := bufio.NewScanner(r)
 	out := bufio.NewWriter(w)
@@ -16,8 +17,11 @@ func run(r io.Reader, w io.Writer) int {
 	var ok bool
 	for scanner.Scan() {
 		text = scanner.Text()
-		if _, ok = lines[text]; !ok {
-			lines[text] = struct{}{}
+		h := fnv.New32a()
+		h.Write([]byte(text))
+		key := h.Sum32()
+		if _, ok = lines[key]; !ok {
+			lines[key] = struct{}{}
 			out.WriteString(text + "\n")
 		}
 	}
